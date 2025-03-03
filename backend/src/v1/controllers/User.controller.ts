@@ -156,6 +156,25 @@ const UserController = {
       return ResponseHelper.error(res, "erre");
     }
   },
+  async GetAllUsers(req:Request,res: Response){
+    try{
+      console.log(req,"req")
+      const users = await prisma.user.findMany({
+          select: {
+          name: true,
+          email: true,
+          dob: true,
+          about: true,
+          gender: true,
+          password: false,
+          age:true
+        },
+      })
+      return ResponseHelper.success(res,"users fetched",users)
+    }catch(err){
+  return ResponseHelper.error(res, "erre");
+    }
+  }
 };
 
 export default UserController;

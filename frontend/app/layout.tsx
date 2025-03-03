@@ -1,12 +1,12 @@
 "use client";
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import "./globals.css";
 import ReactQueryProvider from "./provider/ReactQueryProvider";
 import { ToasterProvider } from "./provider/ToastProvider";
-
+import { Inter } from "next/font/google";
+const inter = Inter({ subsets: ["latin"] });
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
         <ReactQueryProvider>
           <ToasterProvider /> <Provider store={store}>{children}</Provider>
         </ReactQueryProvider>

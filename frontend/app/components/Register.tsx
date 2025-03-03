@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Eye, EyeOff } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -36,7 +39,9 @@ dayjs.extend(utc);
 export function RegisterForm() {
   const { mutate: registerUser } = useRegisterMutation();
   const router = useRouter();
-  const genders = ["Male", "Female", "other"];
+  const [showPassword, setShowPassword] = useState(false);
+  const genders = ["Male", "Female", "Other"];
+
   const form = useForm<z.infer<typeof RegisterInputSchema>>({
     resolver: zodResolver(RegisterInputSchema),
     defaultValues: {
@@ -65,18 +70,17 @@ export function RegisterForm() {
       onError: (error: any) => {
         const errorMessage =
           error?.response?.data?.message || "An unexpected error occurred";
-
         toast.error(errorMessage);
       },
     });
   }
 
   return (
-    <div className="w-1/2 p-10 m-10">
+    <div className="w-1/2 p-10 bg-white h-[100vh]">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-5"
+          className="flex flex-col gap-5 m-10"
         >
           <FormField
             name="name"
@@ -84,7 +88,7 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input placeholder="Enter your name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -96,25 +100,13 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="enter your email" {...field} />
+                  <Input placeholder="Enter your email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <FormField
-            name="age"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Age</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="25" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             name="dob"
             render={({ field }) => (
@@ -132,22 +124,33 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
+
           <FormField
             name="password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Enter password"
-                    {...field}
-                  />
-                </FormControl>
+                <div className="relative">
+                  <FormControl>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             name="gender"
             render={({ field }) => (
@@ -158,7 +161,7 @@ export function RegisterForm() {
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
-                    {genders?.map((gender: string) => (
+                    {genders.map((gender) => (
                       <SelectItem key={gender} value={gender}>
                         {gender}
                       </SelectItem>
@@ -168,6 +171,7 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
+
           <FormField
             name="about"
             render={({ field }) => (

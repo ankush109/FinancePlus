@@ -57,7 +57,7 @@ export function LoginForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-5"
+          className="flex flex-col gap-5 "
         >
           <FormField
             name="email"

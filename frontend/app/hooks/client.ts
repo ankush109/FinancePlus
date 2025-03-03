@@ -9,7 +9,7 @@ export const API = axios.create({
   },
 });
 
-// Check if window is defined to prevent SSR errors
+
 const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
 export const AUTH_API = axios.create({

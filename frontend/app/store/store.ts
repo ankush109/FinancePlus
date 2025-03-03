@@ -1,4 +1,4 @@
-// store/store.ts
+
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/AuthSlice";
 
@@ -8,6 +8,6 @@ export const store = configureStore({
   },
 });
 
-// Define RootState and AppDispatch for TypeScript
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
