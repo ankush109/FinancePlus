@@ -1,0 +1,25 @@
+import dayjs, { Dayjs } from "dayjs";
+import { z } from "zod";
+
+export const RegisterInputSchema = z.object({
+  email: z.string(),
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  age: z
+    .number()
+    .min(0)
+    .max(120, { message: "Age must be between 0 and 120." }),
+  dob: z.custom<Dayjs>((val) => dayjs.isDayjs(val), "Invalid date"),
+  password: z
+    .string()
+    .min(10, { message: "Password must be at least 10 characters." })
+    .regex(/[a-zA-Z]/, "Must contain letters")
+    .regex(/[0-9]/, "Must contain at least one digit"),
+  gender: z.string().nonempty("Please select a gender"),
+  about: z.string().max(5000, "Maximum 5000 characters allowed"),
+});
+
+
+export const LoginInputSchema = z.object({
+  email:z.string(),
+  password:z.string()
+})

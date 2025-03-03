@@ -27,46 +27,42 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import utc from "dayjs/plugin/utc";
+import { useRegisterMutation } from "../hooks/mutation/useRegisterMutation";
+import toast from "react-hot-toast";
+import { RegisterInputSchema } from "../types/FormSchema";
 
 dayjs.extend(utc);
-const FormSchema = z.object({
-  username: z
-    .string()
-    .min(2, { message: "Name must be at least 2 characters." }),
-  age: z
-    .number()
-    .min(0)
-    .max(120, { message: "Age must be between 0 and 120." }),
-  dateOfBirth: z.custom<Dayjs>((val) => dayjs.isDayjs(val), "Invalid date"),
-  password: z
-    .string()
-    .min(10, { message: "Password must be at least 10 characters." })
-    .regex(/[a-zA-Z]/, "Must contain letters")
-    .regex(/[0-9]/, "Must contain at least one digit"),
-  gender: z.string().nonempty("Please select a gender"),
-  about: z.string().max(5000, "Maximum 5000 characters allowed"),
-});
 
 export function RegisterForm() {
-  const genders = ["male", "female", "other"];
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const { mutate: registerUser } = useRegisterMutation();
+  const genders = ["Male", "Female", "other"];
+  const form = useForm<z.infer<typeof RegisterInputSchema>>({
+    resolver: zodResolver(RegisterInputSchema),
     defaultValues: {
-      username: "",
+      email: "",
+      name: "",
       age: 18,
-      dateOfBirth: dayjs(),
+      dob: dayjs(),
       password: "",
       gender: "",
       about: "",
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    const formattedDate = data.dateOfBirth.utc().startOf("day").toISOString();
-
-    console.log("Submitted data:", {
+  function onSubmit(data: z.infer<typeof RegisterInputSchema>) {
+    const formattedDate = data.dob.utc().startOf("day").toISOString();
+    const registerInputData = {
       ...data,
-      dateOfBirth: formattedDate,
+      dob: formattedDate,
+    };
+    console.log(registerInputData, "register input");
+    registerUser(registerInputData, {
+      onSuccess: () => {
+        toast.success("User registered successfully!");
+      },
+      onError: () => {
+        toast.error("Error occurred while registering");
+      },
     });
   }
 
@@ -78,12 +74,24 @@ export function RegisterForm() {
           className="flex flex-col gap-5"
         >
           <FormField
-            name="username"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input placeholder="John Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="enter your email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -102,9 +110,8 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-
           <FormField
-            name="dateOfBirth"
+            name="dob"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Date of Birth</FormLabel>
@@ -120,7 +127,6 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-
           <FormField
             name="password"
             render={({ field }) => (
@@ -137,7 +143,6 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-
           <FormField
             name="gender"
             render={({ field }) => (
@@ -158,7 +163,6 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-
           <FormField
             name="about"
             render={({ field }) => (
@@ -174,7 +178,6 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-
           <Button type="submit">Submit</Button>
         </form>
       </Form>
