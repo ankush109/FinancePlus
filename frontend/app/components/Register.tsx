@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -30,11 +29,13 @@ import utc from "dayjs/plugin/utc";
 import { useRegisterMutation } from "../hooks/mutation/useRegisterMutation";
 import toast from "react-hot-toast";
 import { RegisterInputSchema } from "../types/FormSchema";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(utc);
 
 export function RegisterForm() {
   const { mutate: registerUser } = useRegisterMutation();
+  const router = useRouter();
   const genders = ["Male", "Female", "other"];
   const form = useForm<z.infer<typeof RegisterInputSchema>>({
     resolver: zodResolver(RegisterInputSchema),
@@ -55,13 +56,17 @@ export function RegisterForm() {
       ...data,
       dob: formattedDate,
     };
-    console.log(registerInputData, "register input");
+
     registerUser(registerInputData, {
       onSuccess: () => {
         toast.success("User registered successfully!");
+        router.push("/login");
       },
-      onError: () => {
-        toast.error("Error occurred while registering");
+      onError: (error: any) => {
+        const errorMessage =
+          error?.response?.data?.message || "An unexpected error occurred";
+
+        toast.error(errorMessage);
       },
     });
   }

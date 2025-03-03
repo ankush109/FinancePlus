@@ -20,11 +20,12 @@ import { LoginInputSchema } from "../types/FormSchema";
 import { useLoginMutation } from "../hooks/mutation/useLoginMutation";
 import { fetchUserDetails, loginSuccess } from "../store/slices/AuthSlice";
 import { AppDispatch } from "../store/store";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const { mutate: LoginUser } = useLoginMutation();
   const dispatch = useDispatch<AppDispatch>();
-
+  const router = useRouter();
   const form = useForm<z.infer<typeof LoginInputSchema>>({
     resolver: zodResolver(LoginInputSchema),
     defaultValues: {
@@ -37,11 +38,16 @@ export function LoginForm() {
     LoginUser(data, {
       onSuccess: (response) => {
         console.log(response.data.accessToken, "Re[op");
-        dispatch(loginSuccess({ token: response.data.accessToken })); // Store token in Redux
-        dispatch(fetchUserDetails()); // Fetch user details immediately
+        dispatch(loginSuccess({ token: response.data.accessToken }));
+        dispatch(fetchUserDetails());
+        toast.success("user logged in successfully!");
+        router.push("/");
       },
-      onError: () => {
-        toast.error("Error occurred while registering");
+      onError: (error: any) => {
+        const errorMessage =
+          error?.response?.data?.message || "An unexpected error occurred";
+
+        toast.error(errorMessage);
       },
     });
   }

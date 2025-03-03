@@ -3,7 +3,6 @@ import { API } from "../client";
 import { ENDPOINTS } from "../endpoints";
 
 export const register = async (userData: any) => {
-  console.log(userData, "taskdata");
   const response = await API.post(ENDPOINTS.REGISTER(), userData);
   return response.data;
 };
