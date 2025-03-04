@@ -20,8 +20,18 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import { useGetAllUsersQuery } from "../hooks/query/useGetAllUserQuery";
+import { RegisterForm } from "./Register";
+import { AddUserForm } from "./AddUser";
 
 const Home = () => {
   const { data, isLoading } = useGetAllUsersQuery();
@@ -29,6 +39,7 @@ const Home = () => {
   const [search, setSearch] = useState("");
   const [filterGender, setFilterGender] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+  const [open, setOpen] = useState(false); // 🔹 Control dialog open state
 
   useEffect(() => {
     if (data?.data) {
@@ -46,18 +57,17 @@ const Home = () => {
   };
 
   const filteredUsers = userData.filter((user) => {
-    return (
-      (search.trim()
-        ? user.name.toLowerCase().includes(search.toLowerCase())
-        : true) &&
-      (!filterGender || user.gender === filterGender)
-    );
+    return (search.trim()
+      ? user.name.toLowerCase().includes(search.toLowerCase())
+      : true) && filterGender != "all"
+      ? !filterGender || user.gender === filterGender
+      : true;
   });
 
   if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div className="p-5">
+    <div className="p-5 border-2 border-gray-300 m-5 rounded-2xl">
       <div className="flex gap-4 mb-4">
         <Input
           placeholder="Search by name..."
@@ -78,6 +88,22 @@ const Home = () => {
           </SelectContent>
         </Select>
 
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger>
+            <Button className="bg-purple-600 hover:bg-purple-700">
+              Add User
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="">
+            <DialogHeader>
+              <DialogTitle>Fill User Details</DialogTitle>
+              <DialogDescription>
+                <AddUserForm setOpen={setOpen} />
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+
         <Button onClick={handleSortByAge} className="ml-auto">
           Sort by Age {sortOrder === "asc" ? <ArrowUp /> : <ArrowDown />}
         </Button>
@@ -97,6 +123,7 @@ const Home = () => {
             <TableHead className="text-left w-[300px]">About</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {filteredUsers.map((user) => (
             <TableRow key={user.id}>

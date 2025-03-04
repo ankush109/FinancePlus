@@ -7,11 +7,12 @@ export const fetchUserDetails = createAsyncThunk<
   User,
   void,
   { state: RootState }
->("auth/fetchUserDetails", async (_, { getState }) => {
+>("auth/fetchUserDetails", async (_, { getState,rejectWithValue  }) => {
   const token = getState()?.auth.token;
   if (!token) throw new Error("No token found");
 
-  const res = await fetch("http://localhost:5000/v1/user/user-details", {
+  try{
+    const res = await fetch("http://localhost:5000/v1/user/user-details", {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -20,11 +21,20 @@ export const fetchUserDetails = createAsyncThunk<
   const data = await res.json();
   console.log(data, "data inm slice");
   return data.data;
+  }catch(error:any){
+     localStorage.removeItem("token"); 
+ return rejectWithValue("unauthorizxed")
+       
+       
+     
+    
+  }
 });
 
 const isBrowser = typeof window !== "undefined";
 const initialState: AuthState = {
   user: null,
+  error:null,
   token: isBrowser ? localStorage.getItem("token") : null,
   isAuthenticated: isBrowser ? !!localStorage.getItem("token") : false,
 };
@@ -49,6 +59,9 @@ const authSlice = createSlice({
     builder.addCase(fetchUserDetails.fulfilled, (state, action) => {
       state.user = action.payload;
     });
+    builder.addCase(fetchUserDetails.rejected, (state, action) => {
+        state.error = action.payload;
+      });
   },
 });
 
