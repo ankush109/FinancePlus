@@ -18,6 +18,8 @@
 
 ![](https://github.com/ankush109/FinancePlus/blob/main/frontend/app/assets/edit-user.png)
 
+Note : I am not taking age in the registration form as we are asking for Date of Birth So it am calculating the age  and then sending the age to the backend ! 
+
 Features :
 
 1. Used ts in frontend and backend for ensuring type validation
