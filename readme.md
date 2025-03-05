@@ -37,6 +37,14 @@ How to run with docker :
 ```sh
 docker-compose up
 ```
+access the front via localhost:3000
+register localhost:3000/register
+login localhost:3000/login
+
+
+
+
+backend endpoints
 
 http://localhost:5000/v1/auth/register 
 request body 
