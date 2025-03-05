@@ -29,8 +29,8 @@ Features :
 
 How to run locally :
 
-Go to backend dir : check example env -> make a .env ( with the values from example ) -> npm i -f -> npx prisma generate -> npm run dev
-Go to frontend dir : npm i -> npm run dev
+Go to backend dir : check example env -> make a .env ( with the values from example ) -> npm i -> npx prisma generate -> npm run dev
+Go to frontend dir : npm i -f -> npm run dev
 
 How to run with docker :
 
