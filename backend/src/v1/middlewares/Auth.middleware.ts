@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import prisma from "../../prisma/index";
+import { UNAUTHORIZED } from "../config/message";
 
 declare module "express" {
   interface Request {
@@ -17,7 +18,7 @@ const authMiddleware = async (
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    res.status(401).json({ message: "Unauthorized. Please log in." });
+    res.status(401).json({ message: UNAUTHORIZED});
     return;
   }
 

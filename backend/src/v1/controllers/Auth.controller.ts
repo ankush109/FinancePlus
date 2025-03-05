@@ -1,9 +1,10 @@
 import { type NextFunction, type Request, type Response } from "express";
 import createError from "http-errors";
 import prisma from "../../prisma/index";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import ResponseHelper from "../../helpers/ResponseHelper";
 import jwt from "jsonwebtoken";
+import { EMAIL_EXISTS, INTERNAL_ERROR, INVALID_CREDENTIALS, LOGGED_SUCCESS, REGISTER_SUCCESS } from "../config/message";
 const AuthController = {
   async Register(
     req: Request,
@@ -11,7 +12,7 @@ const AuthController = {
     next: NextFunction
   ): Promise<any> {
     try {
-      const { name, age, dob, password, gender, about,   email } = req.body;
+      const { name, age, dob, password, gender, about, email } = req.body;
       const user = await prisma.user.findFirst({
         where: {
           email: email,
@@ -20,7 +21,7 @@ const AuthController = {
       if (user)
         return res.status(400).json({
           success: false,
-          message: "User with email already exists!",
+          message: EMAIL_EXISTS,
         });
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
@@ -38,11 +39,7 @@ const AuthController = {
       });
 
       const { password: _, ...userWithoutPassword } = newUser;
-      return ResponseHelper.success(
-        res,
-        "user registered Successfully!",
-        userWithoutPassword
-      );
+      return ResponseHelper.success(res, REGISTER_SUCCESS, userWithoutPassword);
     } catch (err) {
       next(createError.InternalServerError());
     }
@@ -55,29 +52,34 @@ const AuthController = {
           email: email,
         },
       });
-      console.log(user, "user");
-      if (!user) return ResponseHelper.error(res, "Invalid credentials");
+  console.log(user,"user")
+      if (!user) return ResponseHelper.error(res, INVALID_CREDENTIALS,401);
       const isPasswordMatch = await bcrypt.compare(password, user?.password);
       if (!isPasswordMatch)
-        return ResponseHelper.error(res, "Invalid Credentials", 401);
+        return ResponseHelper.error(res, INVALID_CREDENTIALS, 401);
 
       if (!process.env.USER_ACCESS_SECRET) {
         throw new Error("Missing USER_SECRET in environment variables");
       }
 
-      const accessToken = jwt.sign({ id: user.id }, process.env.USER_ACCESS_SECRET, {
-        expiresIn: "1h",
-      });
+      const accessToken = jwt.sign(
+        { id: user.id },
+        process.env.USER_ACCESS_SECRET,
+        {
+          expiresIn: "1h",
+        }
+      );
       return ResponseHelper.success(
         res,
-        "user logged in successfully",
+        LOGGED_SUCCESS,
         {
           accessToken: accessToken,
         },
         200
       );
     } catch (err) {
-      return ResponseHelper.error(res, "Internal server error", 400);
+      console.log(err,"Err")
+      return ResponseHelper.error(res, INTERNAL_ERROR, 400);
     }
   },
 };

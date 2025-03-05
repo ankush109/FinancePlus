@@ -7,34 +7,30 @@ export const fetchUserDetails = createAsyncThunk<
   User,
   void,
   { state: RootState }
->("auth/fetchUserDetails", async (_, { getState,rejectWithValue  }) => {
+>("auth/fetchUserDetails", async (_, { getState, rejectWithValue }) => {
   const token = getState()?.auth.token;
   if (!token) throw new Error("No token found");
 
-  try{
+  try {
     const res = await fetch("http://localhost:5000/v1/user/user-details", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  if (!res.ok) throw new Error("Failed to fetch user details");
+    if (!res.ok) throw new Error("Failed to fetch user details");
 
-  const data = await res.json();
-  console.log(data, "data inm slice");
-  return data.data;
-  }catch(error:any){
-     localStorage.removeItem("token"); 
- return rejectWithValue("unauthorizxed")
-       
-       
-     
-    
+    const data = await res.json();
+
+    return data.data;
+  } catch (error: any) {
+    localStorage.removeItem("token");
+    return rejectWithValue("unauthorized");
   }
 });
 
 const isBrowser = typeof window !== "undefined";
 const initialState: AuthState = {
   user: null,
-  error:null,
+  error: null,
   token: isBrowser ? localStorage.getItem("token") : null,
   isAuthenticated: isBrowser ? !!localStorage.getItem("token") : false,
 };
@@ -60,8 +56,8 @@ const authSlice = createSlice({
       state.user = action.payload;
     });
     builder.addCase(fetchUserDetails.rejected, (state, action) => {
-        state.error = action.payload;
-      });
+      state.error = action.payload;
+    });
   },
 });
 

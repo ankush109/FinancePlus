@@ -21,9 +21,13 @@ import { useLoginMutation } from "../hooks/mutation/useLoginMutation";
 import { fetchUserDetails, loginSuccess } from "../store/slices/AuthSlice";
 import { AppDispatch } from "../store/store";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 export function LoginForm() {
   const { mutate: LoginUser } = useLoginMutation();
+  const [issubmitting, setissubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const form = useForm<z.infer<typeof LoginInputSchema>>({
@@ -35,15 +39,17 @@ export function LoginForm() {
   });
 
   function onSubmit(data: z.infer<typeof LoginInputSchema>) {
+    setissubmitting(true);
     LoginUser(data, {
       onSuccess: (response) => {
-        console.log(response.data.accessToken, "Re[op");
+        setissubmitting(!issubmitting);
         dispatch(loginSuccess({ token: response.data.accessToken }));
         dispatch(fetchUserDetails());
         toast.success("user logged in successfully!");
         router.push("/");
       },
       onError: (error: any) => {
+        setissubmitting(false);
         const errorMessage =
           error?.response?.data?.message || "An unexpected error occurred";
 
@@ -53,7 +59,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-1/2 p-10 m-10">
+    <div className="w-1/2 p-10 m-10 border-2 border-gray-200 rounded-3xl bg-white">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -77,19 +83,29 @@ export function LoginForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Enter password"
-                    {...field}
-                  />
-                </FormControl>
+                <div className="relative">
+                  <FormControl>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={issubmitting}>
+            Submit
+          </Button>
         </form>
       </Form>
     </div>

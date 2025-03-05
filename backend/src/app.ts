@@ -12,12 +12,12 @@ import "./v1/config/env.config";
 
 import { AuthRoutes,UserRoutes } from "./v1/routes";
 
-// RateLimitter
+
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Limit each IP to 1000 requests per `window` (here, per 15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  windowMs: 15 * 60 * 1000, 
+  max: 1000,
+  standardHeaders: true, 
+  legacyHeaders: false, 
   message: {
     status: createError.TooManyRequests().status,
     message: createError.TooManyRequests().message,
@@ -30,7 +30,7 @@ const corsOption = {
 
 const app: Express = express();
 
-// Global variable appRoot with base dirname
+
 global.appRoot = path.resolve(__dirname);
 
 // Middlewares
@@ -60,7 +60,6 @@ app.use((_req: Request, _res: Response, next: NextFunction) => {
   next(createError.NotFound());
 });
 
-// Error Handler
 app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
   res.status(err.status || 500);
   res.send({
@@ -69,7 +68,7 @@ app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-// Server Configs
+
 const PORT: number = Number(process.env.PORT) || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 @ http://localhost:${PORT}`);

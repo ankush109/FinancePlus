@@ -11,7 +11,7 @@ export const registerSchema = z.object({
     .min(10, "Password must be at least 10 characters long")
     .regex(/[A-Za-z]/, "Password must contain at least one letter")
     .regex(/\d/, "Password must contain at least one digit"),
-  gender: z.enum(["Male", "Female", "Other"]),
+  gender: z.enum(["Male", "Female", "Others"]),
   about: z.string().max(5000, "About section cannot exceed 5000 characters"),
   email: z.string().email("Invalid email format"),
 });

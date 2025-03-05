@@ -1,27 +1,27 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
+enum Gender {
+  Male
+  Female
+  Others
+}
+
 model User {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
-  name      String   @db.VarChar(255)
+  name      String
   age       Int
   dob       DateTime
-  password  String   @db.VarChar(255)
-  gender    String   @db.VarChar(10)
-  about     String   @db.Text
+  password  String
+  gender    Gender
+  about     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

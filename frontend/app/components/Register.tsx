@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -33,14 +33,18 @@ import { useRegisterMutation } from "../hooks/mutation/useRegisterMutation";
 import toast from "react-hot-toast";
 import { RegisterInputSchema } from "../types/FormSchema";
 import { useRouter } from "next/navigation";
+import { useGetGenderQuery } from "../hooks/query/useGetGenderQuery";
 
 dayjs.extend(utc);
 
 export function RegisterForm() {
+  const [issubmitting, setissubmitting] = useState(false);
   const { mutate: registerUser } = useRegisterMutation();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const genders = ["Male", "Female", "Other"];
+  const [ageError, setageError] = useState(false);
+  const { data, isLoading } = useGetGenderQuery();
+  const genders = data?.data;
 
   const form = useForm<z.infer<typeof RegisterInputSchema>>({
     resolver: zodResolver(RegisterInputSchema),
@@ -48,7 +52,6 @@ export function RegisterForm() {
       email: "",
       name: "",
       age: 18,
-      dob: dayjs(),
       password: "",
       gender: "",
       about: "",
@@ -56,18 +59,25 @@ export function RegisterForm() {
   });
 
   function onSubmit(data: z.infer<typeof RegisterInputSchema>) {
-    const formattedDate = data.dob.utc().startOf("day").toISOString();
+    setissubmitting(true);
+    const formattedDate = dayjs(data.dob).utc().startOf("day").toISOString();
+
+    const age = dayjs().diff(dayjs(formattedDate), "year");
+
     const registerInputData = {
       ...data,
+      age: age,
       dob: formattedDate,
     };
 
     registerUser(registerInputData, {
       onSuccess: () => {
+        setissubmitting(false);
         toast.success("User registered successfully!");
         router.push("/login");
       },
       onError: (error: any) => {
+        setissubmitting(false);
         const errorMessage =
           error?.response?.data?.message || "An unexpected error occurred";
         toast.error(errorMessage);
@@ -76,7 +86,7 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="w-1/2 p-10 bg-white h-[100vh]">
+    <div className="w-1/2 p-5 bg-white h-[100vh]">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -116,7 +126,14 @@ export function RegisterForm() {
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       value={field.value}
-                      onChange={(newValue) => field.onChange(newValue)}
+                      onChange={(newValue) => {
+                        field.onChange(newValue);
+                        const selectedDate = dayjs(newValue)
+                          .utc()
+                          .startOf("day");
+                        const age = dayjs().diff(selectedDate, "year");
+                        setageError(age < 18);
+                      }}
                     />
                   </LocalizationProvider>
                 </FormControl>
@@ -124,7 +141,7 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-
+          {ageError ? <h1 className="">You have to be atleast 18</h1> : ""}
           <FormField
             name="password"
             render={({ field }) => (
@@ -161,11 +178,13 @@ export function RegisterForm() {
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
-                    {genders.map((gender) => (
-                      <SelectItem key={gender} value={gender}>
-                        {gender}
-                      </SelectItem>
-                    ))}
+                    {!isLoading
+                      ? genders?.map((gender: any) => (
+                          <SelectItem key={gender} value={gender}>
+                            {gender}
+                          </SelectItem>
+                        ))
+                      : "loading"}
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -187,7 +206,9 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={issubmitting}>
+            Submit
+          </Button>
         </form>
       </Form>
     </div>
