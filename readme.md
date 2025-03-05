@@ -37,3 +37,80 @@ How to run with docker :
 ```sh
 docker-compose up
 ```
+
+http://localhost:5000/v1/auth/register 
+request body 
+{
+  "email": "kajol@gmail.com",
+  "name": "megha2 Banerjee",
+  "age": 30,
+  "dob": "1994-05-15T00:00:00.000Z",
+  "password": "kajol2@gmail.com",
+  "gender": "Male",
+  "about": "Software engineer with a passion for backend development.d"
+}
+
+response : 
+{
+    "success": true,
+    "message": "User registered successfully!",
+    "data": {
+        "id": "67c8085d0ba3b8f481ed911c",
+        "email": "kajol@gmail.com",
+        "name": "megha2 Banerjee",
+        "age": 30,
+        "dob": "1994-05-15T00:00:00.000Z",
+        "gender": "Male",
+        "about": "Software engineer with a passion for backend development.d",
+        "createdAt": "2025-03-05T08:16:29.863Z",
+        "updatedAt": "2025-03-05T08:16:29.863Z"
+    }
+}
+
+
+http://localhost:5000/v1/auth/login
+
+request body 
+
+{
+    "email" :"kajol@gmail.com",
+    "password": "kajol2@gmail.com"
+}
+
+response 
+
+{
+    "success": true,
+    "message": "User logged in successfully!",
+    "data": {
+        "accessToken": "xxx"
+    }
+}
+
+http://localhost:5000/v1/user/ID    PATCH
+requst body
+{
+    "name":"souvik",
+    "email":"a@gmail.com"
+}
+
+
+http://localhost:5000/v1/user/ID   GET
+request response
+{
+    "success": true,
+    "message": "User details fetched successfully!",
+    "data": {
+        "name": "souvik",
+        "email": "a@gmail.com",
+        "dob": "1994-05-15T00:00:00.000Z",
+        "about": "Software engineer with a passion for backend development.d",
+        "gender": "Male"
+    }
+}
+
+http://localhost:5000/v1/user/ID DELETE
+
+POSTMAN COLLECTION : https://drive.google.com/file/d/1X-X8mhMCsUzCzgBUNhWi9Wa3Uf5AGKRI/view?usp=sharing
+
+
