@@ -37,7 +37,7 @@ const Home = () => {
   const { data, isLoading } = useGetAllUsersQuery();
   const [userData, setUserData] = useState<any[]>([]);
   const [search, setSearch] = useState("");
-  const [filterGender, setFilterGender] = useState("");
+  const [filterGender, setFilterGender] = useState("all");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const { mutate: deleteUser } = useDeleteMutation();
@@ -63,9 +63,7 @@ const Home = () => {
         ? user.name.toLowerCase().includes(search.toLowerCase()) ||
           user.email.toLowerCase().includes(search.toLowerCase())
         : true) &&
-      (filterGender !== "all"
-        ? !filterGender || user.gender === filterGender
-        : true)
+      (filterGender !== "all" ? user.gender === filterGender : true)
     );
   });
   const handleDeleteUser = (user_id: number) => {
@@ -99,7 +97,7 @@ const Home = () => {
           className="w-1/3"
         />
 
-        <Select onValueChange={setFilterGender}>
+        <Select onValueChange={setFilterGender} defaultValue="all">
           <SelectTrigger className="w-1/4">
             <SelectValue placeholder="Filter by gender" />
           </SelectTrigger>
