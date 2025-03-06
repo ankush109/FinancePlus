@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-
 import { RootState } from "../store";
 import { AuthState, User } from "@/app/types/authTypes";
 
@@ -19,7 +18,6 @@ export const fetchUserDetails = createAsyncThunk<
     if (!res.ok) throw new Error("Failed to fetch user details");
 
     const data = await res.json();
-
     return data.data;
   } catch (error: any) {
     localStorage.removeItem("token");
@@ -28,11 +26,13 @@ export const fetchUserDetails = createAsyncThunk<
 });
 
 const isBrowser = typeof window !== "undefined";
+
 const initialState: AuthState = {
   user: null,
   error: null,
   token: isBrowser ? localStorage.getItem("token") : null,
   isAuthenticated: isBrowser ? !!localStorage.getItem("token") : false,
+  loading: false, // Added loading state
 };
 
 const authSlice = createSlice({
@@ -48,14 +48,21 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      state.loading = false; // Reset loading state on logout
       localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchUserDetails.pending, (state) => {
+      state.loading = true;
+      state.error = null; // Reset error state
+    });
     builder.addCase(fetchUserDetails.fulfilled, (state, action) => {
+      state.loading = false;
       state.user = action.payload;
     });
     builder.addCase(fetchUserDetails.rejected, (state, action) => {
+      state.loading = false;
       state.error = action.payload;
     });
   },

@@ -21,38 +21,47 @@ import {
 } from "@/components/ui/select";
 import { MdEdit } from "react-icons/md";
 import { Button } from "@/components/ui/button";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, Loader } from "lucide-react";
 import { useGetAllUsersQuery } from "../hooks/query/useGetAllUserQuery";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import { useDeleteMutation } from "../hooks/mutation/useDeleteMutation";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { Gender } from "../types/FormSchema";
+import LoaderComponent from "./LoaderComponent";
 
 const ITEMS_PER_PAGE = 10;
 
 const Home = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data, isLoading } = useGetAllUsersQuery();
+
   const [userData, setUserData] = useState<any[]>([]);
   const [search, setSearch] = useState("");
-  const [filterGender, setFilterGender] = useState("all");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+
+  const [filterGender, setFilterGender] = useState<Gender>("all");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>("asc");
+
   const [currentPage, setCurrentPage] = useState(1);
   const { mutate: deleteUser } = useDeleteMutation();
+  const { data, isLoading, refetch, isFetching } = useGetAllUsersQuery(
+    sortOrder,
+    filterGender,
+    search
+  );
   useEffect(() => {
     if (data?.data) {
       setUserData(data.data);
     }
   }, [data?.data]);
 
+  useEffect(() => {
+    refetch();
+  }, [filterGender, search]);
   const handleSortByAge = () => {
-    const sortedData = [...userData].sort((a, b) =>
-      sortOrder === "asc" ? b.age - a.age : a.age - b.age
-    );
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    setUserData(sortedData);
+    refetch();
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -97,7 +106,12 @@ const Home = () => {
           className="w-1/3"
         />
 
-        <Select onValueChange={setFilterGender} defaultValue="all">
+
+        <Select
+          onValueChange={(value: Gender) => setFilterGender(value)}
+          defaultValue="all"
+        >
+
           <SelectTrigger className="w-1/4">
             <SelectValue placeholder="Filter by gender" />
           </SelectTrigger>
@@ -138,7 +152,11 @@ const Home = () => {
           </TableRow>
         </TableHeader>
 
-        {paginatedUsers.length > 0 ? (
+        {isFetching ? (
+          <div className="flex  items-center  h-[300px]">
+            <LoaderComponent />
+          </div>
+        ) : paginatedUsers.length > 0 ? (
           <TableBody>
             {paginatedUsers.map((user) => (
               <TableRow key={user.id}>
