@@ -36,3 +36,4 @@ export const LoginInputSchema = z.object({
   email:z.string(),
   password:z.string()
 })
+export type Gender = "Male" | "Female" | "Others" | "all"
