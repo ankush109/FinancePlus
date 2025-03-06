@@ -39,8 +39,10 @@ const Home = () => {
 
   const [userData, setUserData] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+
   const [filterGender, setFilterGender] = useState<Gender>("all");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>("asc");
+
   const [currentPage, setCurrentPage] = useState(1);
   const { mutate: deleteUser } = useDeleteMutation();
   const { data, isLoading, refetch, isFetching } = useGetAllUsersQuery(
@@ -104,10 +106,12 @@ const Home = () => {
           className="w-1/3"
         />
 
+
         <Select
           onValueChange={(value: Gender) => setFilterGender(value)}
           defaultValue="all"
         >
+
           <SelectTrigger className="w-1/4">
             <SelectValue placeholder="Filter by gender" />
           </SelectTrigger>
