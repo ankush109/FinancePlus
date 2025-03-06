@@ -23,8 +23,11 @@ const Navbar = () => {
         )}
 
         {user ? (
-          <div onClick={handleLogout} className="cursor-pointer">
-            Logout
+          <div className="flex gap-5">
+            <Link href="/profile">My Profile</Link>
+            <div onClick={handleLogout} className="cursor-pointer">
+              Logout
+            </div>
           </div>
         ) : (
           " "

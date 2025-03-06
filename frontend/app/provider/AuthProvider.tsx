@@ -13,10 +13,7 @@ export default function AuthProvider({
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      dispatch(fetchUserDetails());
-    }
+    dispatch(fetchUserDetails());
   }, [dispatch]);
 
   return <>{children}</>;

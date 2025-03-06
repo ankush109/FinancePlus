@@ -34,6 +34,7 @@ import toast from "react-hot-toast";
 import { RegisterInputSchema } from "../types/FormSchema";
 import { useRouter } from "next/navigation";
 import { useGetGenderQuery } from "../hooks/query/useGetGenderQuery";
+import LoaderComponent from "./LoaderComponent";
 
 dayjs.extend(utc);
 
@@ -178,13 +179,15 @@ export function RegisterForm() {
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
-                    {!isLoading
-                      ? genders?.map((gender: any) => (
-                          <SelectItem key={gender} value={gender}>
-                            {gender}
-                          </SelectItem>
-                        ))
-                      : "loading"}
+                    {!isLoading ? (
+                      genders?.map((gender: any) => (
+                        <SelectItem key={gender} value={gender}>
+                          {gender}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <LoaderComponent />
+                    )}
                   </SelectContent>
                 </Select>
               </FormItem>

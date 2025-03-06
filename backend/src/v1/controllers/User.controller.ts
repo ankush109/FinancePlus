@@ -157,10 +157,12 @@ const UserController = {
   },
   async GetAllUsers(req: Request, res: Response) {
     try {
-      const { sort, gender, search } = req.query;
+      const { sort, gender, search,page=1 } = req.query;
 
+      const current_page = parseInt(page as string) - 1
+      const ITEMS_PER_PAGE = 10
       const order = sort === "desc" ? "desc" : "asc";
-
+      console.log(current_page,"current_page")
       let genderFilter: Gender | undefined;
       if (
         typeof gender === "string" &&
@@ -172,18 +174,21 @@ const UserController = {
       let whereCondition: any = {};
 
       const trimmedSearch = typeof search === "string" ? search.trim() : "";
-
+    
       if (trimmedSearch) {
+        console.log("in condition")
         whereCondition.OR = [
           { name: { contains: trimmedSearch, mode: "insensitive" } },
           { email: { contains: trimmedSearch, mode: "insensitive" } },
-        ];
+        ]
+         console.log(whereCondition.OR[0].name,"where condition")
       }
 
       if (genderFilter) {
         whereCondition.gender = genderFilter;
       }
-
+     const totalUsers = await prisma.user.findMany()
+     const totalUserCount = Math.ceil(totalUsers.length/ITEMS_PER_PAGE)
       const users = await prisma.user.findMany({
         select: {
           name: true,
@@ -195,13 +200,19 @@ const UserController = {
           age: true,
         },
         where: whereCondition,
+        take:ITEMS_PER_PAGE,
+      skip:current_page*ITEMS_PER_PAGE,
         orderBy: {
           age: order,
         },
       });
 
-      return ResponseHelper.success(res, USER_DETAILS_SUCCESS, users);
+      return ResponseHelper.success(res, USER_DETAILS_SUCCESS, {
+        users:users,
+        totalPageCount:totalUserCount
+      });
     } catch (err) {
+      console.log(err,"Erre")
       return ResponseHelper.error(res, INTERNAL_ERROR);
     }
   },

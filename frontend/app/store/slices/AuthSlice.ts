@@ -8,7 +8,8 @@ export const fetchUserDetails = createAsyncThunk<
   { state: RootState }
 >("auth/fetchUserDetails", async (_, { getState, rejectWithValue }) => {
   const token = getState()?.auth.token;
-  if (!token) throw new Error("No token found");
+  console.log(token,"token")
+  if (!token)  return rejectWithValue("unauthorized");
 
   try {
     const res = await fetch("http://localhost:5000/v1/user/user-details", {
@@ -20,7 +21,8 @@ export const fetchUserDetails = createAsyncThunk<
     const data = await res.json();
     return data.data;
   } catch (error: any) {
-    localStorage.removeItem("token");
+
+    console.log("in err token")
     return rejectWithValue("unauthorized");
   }
 });
@@ -32,7 +34,7 @@ const initialState: AuthState = {
   error: null,
   token: isBrowser ? localStorage.getItem("token") : null,
   isAuthenticated: isBrowser ? !!localStorage.getItem("token") : false,
-  loading: false, // Added loading state
+  loading: false, 
 };
 
 const authSlice = createSlice({
@@ -48,14 +50,14 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      state.loading = false; // Reset loading state on logout
+      state.loading = false; 
       localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserDetails.pending, (state) => {
       state.loading = true;
-      state.error = null; // Reset error state
+      state.error = null; 
     });
     builder.addCase(fetchUserDetails.fulfilled, (state, action) => {
       state.loading = false;

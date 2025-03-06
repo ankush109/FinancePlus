@@ -66,7 +66,7 @@ const AuthController = {
         { id: user.id },
         process.env.USER_ACCESS_SECRET,
         {
-          expiresIn: "1h",
+          expiresIn: "12h",
         }
       );
       return ResponseHelper.success(

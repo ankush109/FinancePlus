@@ -30,6 +30,7 @@ import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { Gender } from "../types/FormSchema";
 import LoaderComponent from "./LoaderComponent";
+import { useDebounceValue } from "../hooks/hook";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -42,39 +43,41 @@ const Home = () => {
 
   const [filterGender, setFilterGender] = useState<Gender>("all");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>("asc");
-
+  const [totalPages, settotalPages] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const { mutate: deleteUser } = useDeleteMutation();
+  const debouncedSearch = useDebounceValue(search);
   const { data, isLoading, refetch, isFetching } = useGetAllUsersQuery(
     sortOrder,
     filterGender,
-    search
+    debouncedSearch,
+    currentPage
   );
+
   useEffect(() => {
     if (data?.data) {
-      setUserData(data.data);
+      setUserData(data.data.users);
+      settotalPages(data?.data.totalPageCount);
     }
   }, [data?.data]);
 
   useEffect(() => {
+    console.log(debouncedSearch, "debounced search!");
     refetch();
-  }, [filterGender, search]);
+  }, [filterGender, debouncedSearch, currentPage]);
   const handleSortByAge = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     refetch();
   };
 
-  if (isLoading) return <p>Loading...</p>;
-
-  const filteredUsers = userData.filter((user) => {
+  if (isLoading)
     return (
-      (search.trim()
-        ? user.name.toLowerCase().includes(search.toLowerCase()) ||
-          user.email.toLowerCase().includes(search.toLowerCase())
-        : true) &&
-      (filterGender !== "all" ? user.gender === filterGender : true)
+      <p>
+        {" "}
+        <LoaderComponent />
+      </p>
     );
-  });
+
   const handleDeleteUser = (user_id: number) => {
     deleteUser(user_id, {
       onSuccess: () => {
@@ -89,13 +92,6 @@ const Home = () => {
     });
   };
 
-  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedUsers = filteredUsers.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE
-  );
-
   return (
     <div className="p-5 border-2 border-gray-300 m-5 rounded-2xl">
       <div className="flex gap-4 mb-4">
@@ -106,12 +102,10 @@ const Home = () => {
           className="w-1/3"
         />
 
-
         <Select
           onValueChange={(value: Gender) => setFilterGender(value)}
           defaultValue="all"
         >
-
           <SelectTrigger className="w-1/4">
             <SelectValue placeholder="Filter by gender" />
           </SelectTrigger>
@@ -156,9 +150,9 @@ const Home = () => {
           <div className="flex  items-center  h-[300px]">
             <LoaderComponent />
           </div>
-        ) : paginatedUsers.length > 0 ? (
+        ) : userData.length > 0 ? (
           <TableBody>
-            {paginatedUsers.map((user) => (
+            {userData.map((user) => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell className="truncate">{user.email}</TableCell>

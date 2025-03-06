@@ -4,6 +4,7 @@ import { EditUserForm } from "../../../components/EditUser";
 import { useParams } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
 import { useGetUserByIdQuery } from "@/app/hooks/query/useUserByIdQuery";
+import LoaderComponent from "@/app/components/LoaderComponent";
 
 function page() {
   const params: any = useParams();
@@ -14,7 +15,7 @@ function page() {
       {!isLoading ? (
         <EditUserForm userId={params.id} userData={data.data} />
       ) : (
-        <>Loading..</>
+        <LoaderComponent />
       )}
     </div>
   );

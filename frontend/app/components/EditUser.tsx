@@ -36,6 +36,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { useState } from "react";
 import { useGetGenderQuery } from "../hooks/query/useGetGenderQuery";
+import LoaderComponent from "./LoaderComponent";
 
 dayjs.extend(utc);
 
@@ -161,13 +162,15 @@ export function EditUserForm({ userId, userData }: EditUserFormProps) {
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                     <SelectContent>
-                      {!isLoading
-                        ? genders?.map((gender: any) => (
-                            <SelectItem key={gender} value={gender}>
-                              {gender}
-                            </SelectItem>
-                          ))
-                        : "loading"}
+                      {!isLoading ? (
+                        genders?.map((gender: any) => (
+                          <SelectItem key={gender} value={gender}>
+                            {gender}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <LoaderComponent />
+                      )}
                     </SelectContent>
                   </Select>
                 </FormItem>

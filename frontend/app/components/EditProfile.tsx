@@ -40,6 +40,7 @@ import { useUpdateMutation } from "../hooks/mutation/useUpdateMutation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store/store";
 import { fetchUserDetails } from "../store/slices/AuthSlice";
+import LoaderComponent from "./LoaderComponent";
 
 dayjs.extend(utc);
 
@@ -163,13 +164,15 @@ export function EditProfile({ userId, userData }: EditUserFormProps) {
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                     <SelectContent>
-                      {!isLoading
-                        ? genders?.map((gender: any) => (
-                            <SelectItem key={gender} value={gender}>
-                              {gender}
-                            </SelectItem>
-                          ))
-                        : "loading"}
+                      {!isLoading ? (
+                        genders?.map((gender: any) => (
+                          <SelectItem key={gender} value={gender}>
+                            {gender}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <LoaderComponent />
+                      )}
                     </SelectContent>
                   </Select>
                 </FormItem>
