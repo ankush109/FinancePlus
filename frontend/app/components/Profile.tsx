@@ -1,44 +1,50 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense, lazy } from "react";
 import { useSelector } from "react-redux";
-import { EditProfile } from "./EditProfile";
 import { useRouter } from "next/navigation";
-import LoaderComponent from "./LoaderComponent";
+
+const EditProfile = lazy(() => import("./EditProfile"));
+const LoaderComponent = lazy(() => import("./LoaderComponent"));
 
 const Profile = () => {
-  const { user, loading } = useSelector((state: any) => state.auth);
-  const error = useSelector((state: any) => state.auth.error);
-  const [countdown, setcountdown] = useState(5);
+  const { user, loading, error } = useSelector((state: any) => state.auth);
+  const [countdown, setCountdown] = useState(5);
   const router = useRouter();
-  console.log(error, "error");
+
   useEffect(() => {
-    let interval: NodeJS.Timeout;
     if (error) {
-      interval = setInterval(() => {
-        setcountdown((prev) => prev - 1);
+      const interval = setInterval(() => {
+        setCountdown((prev) => (prev > 1 ? prev - 1 : 1));
       }, 1000);
-      setTimeout(() => {
+
+      const timeout = setTimeout(() => {
         router.push("/login");
-      }, 4000);
+      }, 5000);
+
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
     }
-    return () => clearInterval(interval);
-  });
-  if (error)
+  }, [error, router]);
+
+  if (error) {
     return (
       <div className="text-red-500 m-10 text-3xl text-center">
-        UnAuthorized ! Redirecting to Login {countdown}
+        Unauthorized! Redirecting to Login in {countdown}...
       </div>
     );
+  }
+
   return (
-    <>
-      {" "}
+    <Suspense fallback={<div>Loading...</div>}>
       {!loading && user ? (
-        <EditProfile userId={1} userData={user} />
+        <EditProfile userId={user.id} userData={user} />
       ) : (
         <LoaderComponent />
       )}
-    </>
+    </Suspense>
   );
 };
 

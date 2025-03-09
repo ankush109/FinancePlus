@@ -12,7 +12,7 @@ const Navbar = () => {
   };
   return (
     <div className="bg-blue-500 p-5 text-white flex justify-between">
-      <div>FinacPlus</div>
+      <Link href="/">FinacPlus</Link>
       <div className="flex gap-5">
         {user ? (
           <div>Welcome {user?.name}</div>

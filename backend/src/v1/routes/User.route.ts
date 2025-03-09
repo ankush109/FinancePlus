@@ -11,6 +11,8 @@ router.get("/get-genders",UserController.getGenders)
 router.get("/:id",UserController.GetUserById)
 router.delete("/:id",UserController.DeleteUserbyId)
 router.patch("/:id",UserController.UpdateUserById)
+router.post("/forgot-password",authMiddleware,UserController.ResetPassword)
+router.post("/reset-password/:token",UserController.ChangePassword)
 
 
 export default router;

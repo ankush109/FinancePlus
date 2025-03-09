@@ -31,6 +31,15 @@ export const updateInputSchema = z.object({
   about: z.string().max(5000, "Maximum 5000 characters allowed"),
 });
 
+export const ChangePasswordSchema = z
+  .object({
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords must match",
+    path: ["confirmPassword"], // Attach error to confirmPassword field
+  });
 
 export const LoginInputSchema = z.object({
   email:z.string(),

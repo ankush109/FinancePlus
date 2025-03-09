@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import ResponseHelper from "../../helpers/ResponseHelper";
 import prisma from "../../prisma/index";
+import  {sendResetEmail}  from "../../helpers/Mailer";
+import bcrypt from "bcryptjs";
 import {
   DELETE_SUCCESS,
   ERR_UPDATE,
@@ -14,6 +16,7 @@ import {
 } from "../config/message";
 import { Gender } from "@prisma/client";
 
+import jwt from "jsonwebtoken";
 declare module "express" {
   interface Request {
     user?: any;
@@ -225,6 +228,48 @@ const UserController = {
       return ResponseHelper.error(res, INTERNAL_ERROR);
     }
   },
+ async ChangePassword(req: Request, res: Response) {
+  const {token} = req.params
+  const {password} = req.body
+  try{
+    const {id} = jwt.verify(token,process.env.USER_ACCESS_SECRET as string) as any
+    const hashedPassword = await bcrypt.hash(password,10)
+    await prisma.user.update({
+      where:{
+        id
+      },
+      data:{
+        password:hashedPassword
+      }
+    })
+    return ResponseHelper.success(res,"Password changed successfully")
+  }
+  catch(err){
+    return ResponseHelper.error(res,INTERNAL_ERROR)
+  }
+  
+ },
+  async ResetPassword(req: Request, res: Response) {
+    try{
+      const {email} = req.body
+      const user = await prisma.user.findFirst({
+        where:{
+          email
+        }
+      })
+      if(!user){
+        return ResponseHelper.error(res,USER_NOT_FOUND,404)
+      }
+      const token = jwt.sign({id:user.id},process.env.USER_ACCESS_SECRET as string,{
+        expiresIn:"30m"  
+      })
+      await sendResetEmail(email,token)
+      return ResponseHelper.success(res,"Reset link sent to your email")
+    }catch(err){
+      console.log(err,"err")
+      return ResponseHelper.error(res, INTERNAL_ERROR);
+    }
+  }
 };
 
 export default UserController;

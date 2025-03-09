@@ -30,7 +30,6 @@ import toast from "react-hot-toast";
 import { updateInputSchema } from "../types/FormSchema";
 
 import { EditUserFormProps } from "../types/authTypes";
-import { useUpdateUserMutation } from "../hooks/mutation/useUpdateUserMutation";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -41,13 +40,15 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store/store";
 import { fetchUserDetails } from "../store/slices/AuthSlice";
 import LoaderComponent from "./LoaderComponent";
+import { useForgotPasswordMutation } from "../hooks/mutation/useForgotPasswordMutation";
 
 dayjs.extend(utc);
 
-export function EditProfile({ userId, userData }: EditUserFormProps) {
+export default function EditProfile({ userId, userData }: EditUserFormProps) {
   const [issubmitting, setissubmitting] = useState(false);
   const queryClient = useQueryClient();
   const { mutate: updateUser } = useUpdateMutation();
+  const { mutate: ForgotPassword } = useForgotPasswordMutation();
   const dispatch = useDispatch<AppDispatch>();
   const [ageError, setageError] = useState(false);
   const { data, isLoading } = useGetGenderQuery();
@@ -92,7 +93,18 @@ export function EditProfile({ userId, userData }: EditUserFormProps) {
       },
     });
   }
-
+  const handleForgotPassword = () => {
+    ForgotPassword(userData.email, {
+      onSuccess: () => {
+        toast.success("Password reset link sent to your email!");
+      },
+      onError: (error: any) => {
+        const errorMessage =
+          error?.response?.data?.message || "An unexpected error occurred";
+        toast.error(errorMessage);
+      },
+    });
+  };
   return (
     <div className=" p-5 m-5 flex gap-5 flex-col bg-white h-[100vh]">
       <div className="text-2xl font-medium">Edit User Details</div>
@@ -199,6 +211,9 @@ export function EditProfile({ userId, userData }: EditUserFormProps) {
             </Button>
           </form>
         </Form>
+      </div>
+      <div className="flex gap-2">
+        <Button onClick={handleForgotPassword}>Forgot Password</Button>
       </div>
     </div>
   );
