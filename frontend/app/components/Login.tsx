@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   Form,
   FormControl,
@@ -99,6 +100,14 @@ export function LoginForm() {
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
+                <div className="flex justify-end">
+                  <Link
+                    href="/forgot-password"
+                    className="text-red-400 font-medium"
+                  >
+                    Forgot Password?
+                  </Link>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -108,6 +117,18 @@ export function LoginForm() {
           </Button>
         </form>
       </Form>
+      <div className="flex justify-between flex-row-reverse items-center gap-2 mt-5">
+        <div className="flex justify-center items-center gap-2">
+          <span>Don't have an account?</span>
+          <Link
+            href="/register"
+            className="text-blue-500 hover:underline cursor-pointer"
+          >
+            Register
+          </Link>
+        </div>
+        <div></div>
+      </div>
     </div>
   );
 }

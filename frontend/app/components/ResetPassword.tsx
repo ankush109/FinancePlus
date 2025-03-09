@@ -14,14 +14,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react"; // Icons for show/hide password
+import { Eye, EyeOff } from "lucide-react";
 import { ChangePasswordSchema } from "../types/FormSchema";
 import { useChangePasswordMutation } from "../hooks/mutation/usePasswordUpdateMutation";
 import toast from "react-hot-toast";
-
-// Define schema with password matching validation
+import { useRouter } from "next/navigation";
 
 const ResetPassword = ({ token }: { token: string }) => {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -44,21 +44,21 @@ const ResetPassword = ({ token }: { token: string }) => {
         onSuccess: () => {
           setIsSubmitting(false);
           toast.success("Password updated successfully!");
+          router.push("/login");
         },
       }
     );
   }
 
   return (
-    <div className="p-5 m-5 flex gap-5 flex-col bg-white h-[100vh]">
+    <div className=" bg-white w-1/2 rounded-2xl  p-5 m-5 flex gap-5 flex-col">
       <div className="text-2xl font-medium">Reset Password</div>
       <div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col m-2 p-2 gap-2 w-1/2"
+            className="flex flex-col gap-5 "
           >
-            {/* Password Field */}
             <FormField
               control={form.control}
               name="password"
@@ -86,7 +86,6 @@ const ResetPassword = ({ token }: { token: string }) => {
               )}
             />
 
-            {/* Confirm Password Field */}
             <FormField
               control={form.control}
               name="confirmPassword"

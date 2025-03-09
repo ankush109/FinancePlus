@@ -69,6 +69,7 @@ const Home = () => {
     );
 
   const handleDeleteUser = (user_id: number) => {
+    console.log("handle delete user!");
     deleteUser(user_id, {
       onSuccess: () => {
         toast.success("User deleted successfully!");

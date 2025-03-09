@@ -33,14 +33,23 @@ export const updateInputSchema = z.object({
 
 export const ChangePasswordSchema = z
   .object({
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z
+    .string()
+    .min(10, { message: "Password must be at least 10 characters." })
+    .regex(/[a-zA-Z]/, "Must contain letters")
+    .regex(/[0-9]/, "Must contain at least one digit"),
+ 
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords must match",
-    path: ["confirmPassword"], // Attach error to confirmPassword field
+    path: ["confirmPassword"],
   });
 
+  export const ForgotPasswordSchema = z.object({
+    email:z.string()
+
+  })
 export const LoginInputSchema = z.object({
   email:z.string(),
   password:z.string()

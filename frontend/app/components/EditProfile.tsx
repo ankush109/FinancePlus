@@ -93,18 +93,7 @@ export default function EditProfile({ userId, userData }: EditUserFormProps) {
       },
     });
   }
-  const handleForgotPassword = () => {
-    ForgotPassword(userData.email, {
-      onSuccess: () => {
-        toast.success("Password reset link sent to your email!");
-      },
-      onError: (error: any) => {
-        const errorMessage =
-          error?.response?.data?.message || "An unexpected error occurred";
-        toast.error(errorMessage);
-      },
-    });
-  };
+
   return (
     <div className=" p-5 m-5 flex gap-5 flex-col bg-white h-[100vh]">
       <div className="text-2xl font-medium">Edit User Details</div>
@@ -211,9 +200,6 @@ export default function EditProfile({ userId, userData }: EditUserFormProps) {
             </Button>
           </form>
         </Form>
-      </div>
-      <div className="flex gap-2">
-        <Button onClick={handleForgotPassword}>Forgot Password</Button>
       </div>
     </div>
   );
