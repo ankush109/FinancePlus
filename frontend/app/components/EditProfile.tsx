@@ -95,13 +95,13 @@ export default function EditProfile({ userId, userData }: EditUserFormProps) {
   }
 
   return (
-    <div className=" p-5 m-5 flex gap-5 flex-col bg-white h-[100vh]">
+    <div className="lg:p-5 m-5 flex gap-5 flex-col bg-white h-[100vh]">
       <div className="text-2xl font-medium">Edit User Details</div>
       <div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col m-2 p-2 gap-2 w-1/2"
+            className="flex flex-col m-2 p-2 gap-2 lg:w-1/2"
           >
             <FormField
               control={form.control}

@@ -51,7 +51,7 @@ const ResetPassword = ({ token }: { token: string }) => {
   }
 
   return (
-    <div className=" bg-white w-1/2 rounded-2xl  p-5 m-5 flex gap-5 flex-col">
+    <div className=" bg-white lg:w-1/2 rounded-2xl  p-5 m-5 flex gap-5 flex-col">
       <div className="text-2xl font-medium">Reset Password</div>
       <div>
         <Form {...form}>

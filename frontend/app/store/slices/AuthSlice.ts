@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { AuthState, User } from "@/app/types/authTypes";
+import { getUserDetails } from "@/app/hooks/query/useGetUserDetailsQuery";
 
 export const fetchUserDetails = createAsyncThunk<
   User,
@@ -12,17 +13,13 @@ export const fetchUserDetails = createAsyncThunk<
   if (!token)  return rejectWithValue("unauthorized");
 
   try {
-    const res = await fetch("http://localhost:5000/v1/user/user-details", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) throw new Error("Failed to fetch user details");
-
-    const data = await res.json();
-    return data.data;
+    const data = await getUserDetails();
+    console.log(data,"data")
+    return data.data
+;
   } catch (error: any) {
 
-    console.log("in err token")
+    console.log(error,"in err token")
     return rejectWithValue("unauthorized");
   }
 });

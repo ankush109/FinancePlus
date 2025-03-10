@@ -35,6 +35,7 @@ import { RegisterInputSchema } from "../types/FormSchema";
 import { useRouter } from "next/navigation";
 import { useGetGenderQuery } from "../hooks/query/useGetGenderQuery";
 import LoaderComponent from "./LoaderComponent";
+import Link from "next/link";
 
 dayjs.extend(utc);
 
@@ -87,7 +88,7 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="w-1/2 p-5 bg-white h-[100vh]">
+    <div className="lg:w-1/2 p-5 bg-white h-[100vh]">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -214,6 +215,11 @@ export function RegisterForm() {
           </Button>
         </form>
       </Form>
+      <div className="text-center mt-5">
+        <Link href="/login" className="text-blue-500 font-medium">
+          Already have an account? Login
+        </Link>
+      </div>
     </div>
   );
 }

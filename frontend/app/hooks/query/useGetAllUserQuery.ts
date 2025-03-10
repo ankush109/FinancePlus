@@ -12,7 +12,7 @@ export const getAllUsers = async (sort:string|null,gender:Gender,searchTerm:stri
   
   export const useGetAllUsersQuery = (sort:string|null,gender:Gender,searchTerm:string,pageOffset:number) =>
     useQuery({
-      queryKey: ["get-all-users"],
+   queryKey: ["get-all-users", sort, gender, searchTerm, pageOffset],
       queryFn: () => getAllUsers(sort,gender,searchTerm,pageOffset),
       select: (data) => {
         const res = data;

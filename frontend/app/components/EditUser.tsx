@@ -98,7 +98,7 @@ export function EditUserForm({ userId, userData }: EditUserFormProps) {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col m-2 p-2 gap-2 w-1/2"
+            className="flex flex-col m-2 p-2 gap-2 lg:w-1/2"
           >
             <FormField
               control={form.control}

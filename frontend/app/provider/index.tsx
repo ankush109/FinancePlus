@@ -4,7 +4,7 @@ import { store } from "../store/store";
 import AuthProvider from "./AuthProvider";
 import ReactQueryProvider from "./ReactQueryProvider";
 import { ToasterProvider } from "./ToastProvider";
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 export default function RootProvider({
   children,
 }: {
@@ -15,6 +15,7 @@ export default function RootProvider({
       <ToasterProvider />{" "}
       <Provider store={store}>
         <AuthProvider>{children}</AuthProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
       </Provider>
     </ReactQueryProvider>
   );

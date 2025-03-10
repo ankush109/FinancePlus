@@ -60,7 +60,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-1/2 p-10 m-10 border-2 border-gray-200 rounded-3xl bg-white">
+    <div className="lg:w-1/2 p-10 m-10 border-2 border-gray-200 rounded-3xl bg-white">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -127,7 +127,6 @@ export function LoginForm() {
             Register
           </Link>
         </div>
-        <div></div>
       </div>
     </div>
   );

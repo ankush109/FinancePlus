@@ -45,7 +45,7 @@ const ForgotPassword = () => {
     });
   }
   return (
-    <div className="p-5 m-5 bg-white w-1/2 rounded-2xl flex gap-5 flex-col">
+    <div className="p-5 m-5 bg-white lg:w-1/2 rounded-2xl flex gap-5 flex-col">
       <div className="text-2xl font-medium">Reset Password</div>
       <div>
         <Form {...form}>

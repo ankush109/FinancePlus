@@ -60,14 +60,6 @@ const Home = () => {
     refetch();
   };
 
-  if (isLoading)
-    return (
-      <p>
-        {" "}
-        <LoaderComponent />
-      </p>
-    );
-
   const handleDeleteUser = (user_id: number) => {
     console.log("handle delete user!");
     deleteUser(user_id, {
@@ -85,19 +77,20 @@ const Home = () => {
 
   return (
     <div className="p-5 border-2 border-gray-300 m-5 rounded-2xl">
-      <div className="flex gap-4 mb-4">
+      <div className="lg:flex gap-10 mb-4">
         <Input
           placeholder="Search by name or email"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-1/3"
+          className="lg:w-1/3"
         />
 
         <Select
-          onValueChange={(value: Gender) => setFilterGender(value)}
+          value={filterGender}
           defaultValue="all"
+          onValueChange={(value: Gender) => setFilterGender(value)}
         >
-          <SelectTrigger className="w-1/4">
+          <SelectTrigger className="">
             <SelectValue placeholder="Filter by gender" />
           </SelectTrigger>
           <SelectContent>
@@ -120,6 +113,7 @@ const Home = () => {
         </Button>
       </div>
       <UserTable
+        isLoading={isLoading}
         userData={userData}
         isFetching={isFetching}
         handleDeleteUser={handleDeleteUser}

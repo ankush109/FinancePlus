@@ -15,6 +15,7 @@ import Link from "next/link";
 
 interface UserTableProps {
   userData: any[];
+  isLoading: boolean;
   isFetching: boolean;
   handleDeleteUser: (id: number) => void;
 }
@@ -22,6 +23,7 @@ const UserTable: React.FC<UserTableProps> = ({
   userData,
   isFetching,
   handleDeleteUser,
+  isLoading,
 }) => {
   return (
     <Table className="w-full border">
@@ -39,7 +41,7 @@ const UserTable: React.FC<UserTableProps> = ({
         </TableRow>
       </TableHeader>
 
-      {isFetching ? (
+      {isFetching || isLoading ? (
         <div className="flex  items-center  h-[300px]">
           <LoaderComponent />
         </div>
