@@ -232,7 +232,18 @@ const UserController = {
   const {token} = req.params
   const {password} = req.body
   try{
-    const {id} = jwt.verify(token,process.env.USER_ACCESS_SECRET as string) as any
+    const ResetPassword = await prisma.passwordResetToken.findFirst({
+      where:{
+        token
+      }
+    })
+
+    if(!ResetPassword){
+      return ResponseHelper.error(res,"Invalid token",400)
+    }
+    const decodedToken:any = jwt.verify(ResetPassword?.token,process.env.PASSWORD_ACCESS as string)
+    const id = decodedToken?.id
+  
     const hashedPassword = await bcrypt.hash(password,10)
     await prisma.user.update({
       where:{
@@ -240,6 +251,12 @@ const UserController = {
       },
       data:{
         password:hashedPassword
+      }
+    })
+    await prisma.passwordResetToken.delete({
+      where:{
+
+        token:token
       }
     })
     return ResponseHelper.success(res,"Password changed successfully")
@@ -260,9 +277,16 @@ const UserController = {
       if(!user){
         return ResponseHelper.error(res,USER_NOT_FOUND,404)
       }
-      const token = jwt.sign({id:user.id},process.env.USER_ACCESS_SECRET as string,{
-        expiresIn:"30m"  
+      const token = jwt.sign({id: user.id},process.env.PASSWORD_ACCESS as string,{
+        expiresIn:"1h"
       })
+      await prisma.passwordResetToken.create({
+        data:{
+          token,
+        
+        }
+      })  
+
       await sendResetEmail(email,token)
       return ResponseHelper.success(res,"Reset link sent to your email")
     }catch(err){
